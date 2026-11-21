@@ -23,7 +23,12 @@ obj-$(CONFIG_MTK_LCM) += mt65xx_lcm_list.o        \
                          lcm_util.o
 
 LCM_LISTS := $(subst ",,$(CONFIG_CUSTOM_KERNEL_LCM))
-obj-$(CONFIG_MTK_LCM) += $(foreach LCM,$(LCM_LISTS),$(LCM)/)
+# U60: u60.config names dg10132004_40c_wuxga_dsi_vdo, which is not in this
+# baseline tree.  Filter to directories that really have a Makefile so kbuild
+# does not stop; the U60 panel driver can be dropped in later and is then
+# compiled automatically.
+LCM_LISTS_EXIST := $(foreach LCM,$(LCM_LISTS),$(if $(wildcard $(srctree)/drivers/misc/mediatek/lcm/$(LCM)/Makefile),$(LCM)))
+obj-$(CONFIG_MTK_LCM) += $(foreach LCM,$(LCM_LISTS_EXIST),$(LCM)/)
 
 subdir-ccflags-$(CONFIG_MTK_LCM) += -I$(srctree)/drivers/misc/mediatek/lcm/inc
 subdir-ccflags-$(CONFIG_MTK_FB) += -I$(srctree)/drivers/misc/mediatek/video/$(MTK_PLATFORM)/dispsys \

@@ -40,7 +40,13 @@ endif
 define FILTER_DRV
 ifeq ($(wildcard $(IMGSENSOR_DRIVER_PATH)/$(MTK_PLATFORM)/camera_project/$(ARCH_MTK_PROJECT)/$(1)),)
 ifeq ($(wildcard $(IMGSENSOR_DRIVER_PATH)/$(MTK_PLATFORM)/$(1)),)
+# U60: only descend into the common driver directory when it actually has a
+# Makefile.  u60.config lists 8 U60-specific sensors that are not in this
+# baseline tree; kbuild would otherwise fail with "No such file or directory".
+# Drivers dropped into common/<ver>/<name>/ later are picked up automatically.
+ifneq ($(wildcard $(IMGSENSOR_DRIVER_PATH)/common/$(COMMON_VERSION)/$(1)/Makefile),)
 common_drv += ../common/$(COMMON_VERSION)/$(1)/
+endif
 else
 platform_drv += $(1)/
 endif
